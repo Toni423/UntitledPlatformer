@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerMove : MonoBehaviour {
@@ -11,11 +12,14 @@ public class PlayerMove : MonoBehaviour {
     [SerializeField] private float attackPointOffset;
     [SerializeField] private int damage = 2;
     [SerializeField] private LayerMask getsDamageBackFrom;
-    [SerializeField] private float throwBackForce;
+    [SerializeField] private float throwBackForceX;
+    [SerializeField] private float throwBackForceY;
     [SerializeField] private int life = 10;
     [SerializeField] private GameObject animationHandler;
-    
+    [SerializeField] private float rollTime;
 
+
+   
     private int maxLife;
     private int currenDirection = 1;
     private int curJumpAmount;
@@ -23,6 +27,10 @@ public class PlayerMove : MonoBehaviour {
     private float timeToIdle;
     private float timeSinceAttacked;
     private int currAttack;
+    private bool isPushed;
+    private float currentRollTime;
+    private bool rolling;
+    
 
     private Sensor_HeroKnight groundSensor;
     private SpriteRenderer spriteRenderer;
@@ -42,6 +50,12 @@ public class PlayerMove : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         timeSinceAttacked += Time.deltaTime;
+        currentRollTime -= Time.deltaTime;
+
+        
+        if (rolling && currentRollTime < 0) {
+            rolling = false;
+        }
         
         //Check if character just landed on the ground
         if (!grounded && groundSensor.State())
@@ -60,6 +74,10 @@ public class PlayerMove : MonoBehaviour {
         if (grounded) {
             curJumpAmount = jumpAmountMax;
         }
+
+        if ( Mathf.Abs(rb.velocity.x) < Mathf.Epsilon) {
+            isPushed = false;
+        }
         
         
         float direct = Input.GetAxis("Horizontal");
@@ -74,23 +92,33 @@ public class PlayerMove : MonoBehaviour {
             currenDirection = 1;
         }
 
+        if (isPushed) {
+            return;
+        }
 
+        if(!rolling)
+            rb.velocity = new Vector2(direct * moveSpeed, rb.velocity.y + directY);
         
-        rb.velocity = new Vector2(direct * moveSpeed, rb.velocity.y + directY);
         
         
         animator.SetFloat("AirSpeedY", rb.velocity.y);
-        
-        
-        
+
+        // Roll
+        if (Input.GetKeyDown(KeyCode.LeftAlt) && !rolling) {
+            animator.SetTrigger("Roll");
+            currentRollTime = rollTime;
+            rb.velocity = new Vector2(rb.velocity.x * 2, rb.velocity.y);
+            rolling = true;
+        }
         //Attack
-        if(Input.GetMouseButtonDown(0) && timeSinceAttacked > 0.25f)
+        else if(Input.GetMouseButtonDown(0) && timeSinceAttacked > 0.25f && !rolling)
         {
             attack();
         } 
         //Jump
-        else if ((Input.GetKeyDown("space") || Input.GetKeyDown(KeyCode.W)) && curJumpAmount > 0) { 
-             curJumpAmount--;
+        else if ((Input.GetKeyDown("space") || Input.GetKeyDown(KeyCode.W)) && curJumpAmount > 0) {
+            rolling = false;
+            curJumpAmount--;
             animator.SetTrigger("Jump");
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
@@ -104,7 +132,7 @@ public class PlayerMove : MonoBehaviour {
         {
             // Prevents flickering transitions to idle
             timeToIdle -= Time.deltaTime;
-            if(timeToIdle < 0)
+            if(timeToIdle < 0) 
                 animator.SetInteger("AnimState", 0);
         }
     }
@@ -146,11 +174,28 @@ public class PlayerMove : MonoBehaviour {
 
     private void OnCollisionEnter2D(Collision2D other) {
         if (getsDamageBackFrom == (getsDamageBackFrom | (1 << other.gameObject.layer))) {
-            Debug.Log(transform.position + ", " + other.gameObject.transform.position);
-            rb.AddForce(( transform.position - other.gameObject.transform.position).normalized * throwBackForce, ForceMode2D.Impulse);
-            life -= 2;
+            animator.SetTrigger("Hurt");
             
-            //TODO dying animation
+            // calculate pushBack direction
+            Vector2 myPos = transform.position;
+            Vector2 enemyPos = other.gameObject.transform.position;
+            float xForce = myPos.x < enemyPos.x ? -throwBackForceX : throwBackForceX;
+            float yForce = myPos.y + 1f < enemyPos.y ? -throwBackForceY : throwBackForceY;
+            
+            // apply force
+            rb.velocity = new Vector2(xForce, yForce);
+            isPushed = true;
+            
+            
+            // life loss
+            life -= 2;
+
+            if (life <= 0) {
+                animator.SetTrigger("Death");
+                this.enabled = false;
+            }
         }
     }
+
+   
 }
