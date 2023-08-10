@@ -3,19 +3,24 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour {
 
+    [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private int jumpAmountMax = 2;
+    [SerializeField] private float rollTime;
+
+    
+    [Header("Attack")]
     [SerializeField] private float attackRadius = 2f;
     [SerializeField] private LayerMask enemies;
     [SerializeField] private Transform attackPoint;
     [SerializeField] private float attackPointOffset;
     [SerializeField] private int damage = 2;
-    [SerializeField] private LayerMask getsDamageBackFrom;
+    
+    [Header("Miscellaneous")]
     [SerializeField] private float throwBackForceX;
     [SerializeField] private float throwBackForceY;
     [SerializeField] private GameObject animationHandler;
-    [SerializeField] private float rollTime;
     [SerializeField] private ScriptableHealthManager healthManager;
 
 
@@ -43,6 +48,7 @@ public class PlayerMove : MonoBehaviour {
         rb = GetComponent<Rigidbody2D>();
         animator = animationHandler.GetComponent<Animator>();
         groundSensor = GameObject.Find("GroundSensor").GetComponent<Sensor_HeroKnight>();
+        healthManager.resetLife();
     }
 
     // Update is called once per frame
@@ -169,31 +175,34 @@ public class PlayerMove : MonoBehaviour {
         Gizmos.DrawWireSphere(attackPoint.position + (Vector3) (Vector2.right * attackPointOffset) * currenDirection, attackRadius);
     }
 
+    
 
-    private void OnCollisionEnter2D(Collision2D other) {
-        if (getsDamageBackFrom == (getsDamageBackFrom | (1 << other.gameObject.layer))) {
-            animator.SetTrigger("Hurt");
+    public void takeDamage(int loss, Vector2 sourcePosition) {
+        animator.SetTrigger("Hurt");
+        
+        // calculate pushBack direction
+        Vector2 myPos = transform.position;
+        float xForce = myPos.x < sourcePosition.x ? -throwBackForceX : throwBackForceX;
+        float yForce = myPos.y + 1f < sourcePosition.y ? -throwBackForceY : throwBackForceY;
             
-            // calculate pushBack direction
-            Vector2 myPos = transform.position;
-            Vector2 enemyPos = other.gameObject.transform.position;
-            float xForce = myPos.x < enemyPos.x ? -throwBackForceX : throwBackForceX;
-            float yForce = myPos.y + 1f < enemyPos.y ? -throwBackForceY : throwBackForceY;
-            
-            // apply force
-            rb.velocity = new Vector2(xForce, yForce);
-            isPushed = true;
-            
-            
-            // life loss
-            healthManager.setLife(healthManager.getLife() - 1);
+        // apply force
+        rb.velocity = new Vector2(xForce, yForce);
+        isPushed = true;
+        
 
-            if (healthManager.getLife() <= 0) {
-                animator.SetTrigger("Death");
-                this.enabled = false;
-            }
+        // life loss
+        healthManager.setLife(healthManager.getLife() - loss);
+
+        if (healthManager.getLife() <= 0) {
+            animator.SetTrigger("Death");
+            this.enabled = false;
         }
     }
 
-   
+
+    private void OnCollisionEnter2D(Collision2D other) {
+        if (enemies == (enemies | (1 << other.gameObject.layer))) {
+            takeDamage(1, other.gameObject.transform.position);
+        }
+    }
 }

@@ -38,6 +38,10 @@ public class ScriptableHealthManager : ScriptableObject, ISerializationCallbackR
     }
 
 
+    public void resetLife() {
+        life = maxLife;
+    }
+
     public void OnBeforeSerialize() {
         
     }
