@@ -14,13 +14,12 @@ public class PlayerMove : MonoBehaviour {
     [SerializeField] private LayerMask getsDamageBackFrom;
     [SerializeField] private float throwBackForceX;
     [SerializeField] private float throwBackForceY;
-    [SerializeField] private int life = 10;
     [SerializeField] private GameObject animationHandler;
     [SerializeField] private float rollTime;
+    [SerializeField] private ScriptableHealthManager healthManager;
 
 
    
-    private int maxLife;
     private int currenDirection = 1;
     private int curJumpAmount;
     private bool grounded;
@@ -39,7 +38,6 @@ public class PlayerMove : MonoBehaviour {
     
 
     private void Start() {
-        maxLife = life;
         curJumpAmount = jumpAmountMax;
         spriteRenderer = animationHandler.GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
@@ -188,9 +186,9 @@ public class PlayerMove : MonoBehaviour {
             
             
             // life loss
-            life -= 2;
+            healthManager.setLife(healthManager.getLife() - 1);
 
-            if (life <= 0) {
+            if (healthManager.getLife() <= 0) {
                 animator.SetTrigger("Death");
                 this.enabled = false;
             }
