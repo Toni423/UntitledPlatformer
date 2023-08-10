@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class EnemySpriteHandler : MonoBehaviour {
@@ -6,12 +7,35 @@ public class EnemySpriteHandler : MonoBehaviour {
     [SerializeField] private float attackRadius = 2f;
     [SerializeField] private int attackDamage;
     [SerializeField] private LayerMask targets;
-
-    
     [SerializeField] private GameObject spell;
+    [SerializeField] private int life = 10;
+    [SerializeField] private float attackCooldown;
 
-    private int currentDirection = -1;
+    [SerializeField] private float meleeViewDistance;
+    [SerializeField] private float spellViewDistance;
     
+    
+    private float timeSinceAttack;
+    private int currentDirection = -1;
+    private Animator animator;
+
+    private void Start() {
+        animator = GetComponent<Animator>();
+    }
+    
+    private void Update() {
+        timeSinceAttack += Time.deltaTime;
+        if (timeSinceAttack > attackCooldown) {
+            if (Physics2D.OverlapCircleAll(attackPoint.position, meleeViewDistance, targets).Length != 0) {
+                attack("Attack");
+            }
+            else if(Physics2D.OverlapCircleAll(attackPoint.position, spellViewDistance, targets).Length != 0){
+                attack("Cast");
+            }
+        }
+    }
+    
+
     public void killEnemy() {
         Destroy(transform.parent.gameObject);
     }
@@ -37,6 +61,30 @@ public class EnemySpriteHandler : MonoBehaviour {
             return;
         }
         Gizmos.DrawWireSphere(attackPoint.position + (Vector3) (Vector2.right * attackPointOffset) * currentDirection, attackRadius);
+        
+        Gizmos.DrawWireSphere(attackPoint.position , meleeViewDistance);
+        Gizmos.DrawWireSphere(attackPoint.position , spellViewDistance);
+
     }
     
+
+    public void takeDamage(int damage) {
+        life -= damage;
+        animator.SetTrigger("Hurt");
+
+        if (life <= 0) {
+            animator.SetBool("Dead", true);
+            
+        }
+    }
+
+    
+    private void attack(string type) {
+        if (timeSinceAttack < attackCooldown) {
+            return;
+        }
+        
+        timeSinceAttack = 0;
+        animator.SetTrigger(type);
+    }
 }

@@ -161,7 +161,7 @@ public class PlayerMove : MonoBehaviour {
         Collider2D[] hit = Physics2D.OverlapCircleAll(attackPoint.position + (Vector3) (Vector2.right * attackPointOffset) * currenDirection, attackRadius, enemies);
         foreach (Collider2D collider in hit) {
             
-            collider.GetComponent<Enemy>().takeDamage(damage);
+            collider.GetComponent<EnemySpriteHandler>().takeDamage(damage);
         }
 
         // Reset timer
@@ -202,7 +202,7 @@ public class PlayerMove : MonoBehaviour {
 
     private void OnCollisionEnter2D(Collision2D other) {
         if (enemies == (enemies | (1 << other.gameObject.layer))) {
-            takeDamage(1, other.gameObject.transform.position);
+            takeDamage(1, other.gameObject.transform.parent.position);
         }
     }
 }

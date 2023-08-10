@@ -17,7 +17,7 @@ TagManager:
   - 
   - Ground
   - 
-  - 
+  - Deadly
   - 
   - 
   - 
@@ -43,6 +43,9 @@ TagManager:
     locked: 0
   - name: Background
     uniqueID: 2381797911
+    locked: 0
+  - name: Decoration
+    uniqueID: 2924912289
     locked: 0
   - name: Default
     uniqueID: 0
