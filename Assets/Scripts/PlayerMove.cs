@@ -23,7 +23,7 @@ public class PlayerMove : MonoBehaviour {
     [SerializeField] private GameObject animationHandler;
     [SerializeField] private ScriptableHealthManager healthManager;
 
-
+    [SerializeField] private SriptableDialogueManager dialogueManager;
    
     private int currenDirection = 1;
     private int curJumpAmount;
@@ -53,6 +53,7 @@ public class PlayerMove : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+
         timeSinceAttacked += Time.deltaTime;
         currentRollTime -= Time.deltaTime;
 
@@ -203,6 +204,11 @@ public class PlayerMove : MonoBehaviour {
     private void OnCollisionEnter2D(Collision2D other) {
         if (enemies == (enemies | (1 << other.gameObject.layer))) {
             takeDamage(1, other.gameObject.transform.parent.position);
+        }
+        else if (other.gameObject.CompareTag("Deadly")) {
+            healthManager.setLife(0);
+            animator.SetTrigger("Death");
+            this.enabled = false;
         }
     }
 }
