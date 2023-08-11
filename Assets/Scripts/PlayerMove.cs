@@ -116,12 +116,12 @@ public class PlayerMove : MonoBehaviour {
             rolling = true;
         }
         //Attack
-        else if(Input.GetMouseButtonDown(0) && timeSinceAttacked > 0.25f && !rolling)
+        else if(Input.GetKeyDown(KeyCode.Space) && timeSinceAttacked > 0.25f && !rolling)
         {
             attack();
         } 
         //Jump
-        else if ((Input.GetKeyDown("space") || Input.GetKeyDown(KeyCode.W)) && curJumpAmount > 0) {
+        else if (Input.GetKeyDown(KeyCode.W) && curJumpAmount > 0) {
             rolling = false;
             curJumpAmount--;
             animator.SetTrigger("Jump");

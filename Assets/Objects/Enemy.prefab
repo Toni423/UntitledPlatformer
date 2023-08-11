@@ -131,7 +131,7 @@ MonoBehaviour:
   life: 10
   attackCooldown: 3
   meleeViewDistance: 4
-  spellViewDistance: 12
+  spellViewDistance: 18
 --- !u!61 &8532188581460720465
 BoxCollider2D:
   m_ObjectHideFlags: 0
