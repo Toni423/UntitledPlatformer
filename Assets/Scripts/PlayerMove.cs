@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class PlayerMove : MonoBehaviour {
@@ -105,8 +104,8 @@ public class PlayerMove : MonoBehaviour {
             rb.velocity = new Vector2(direct * moveSpeed, rb.velocity.y + directY);
         
         
-        
         animator.SetFloat("AirSpeedY", rb.velocity.y);
+        
 
         // Roll
         if (Input.GetKeyDown(KeyCode.LeftAlt) && !rolling) {

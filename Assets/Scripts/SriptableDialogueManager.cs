@@ -5,6 +5,7 @@ public class SriptableDialogueManager : ScriptableObject {
     private string[] text;
     private float textSpeed;
     private Dialogue dialogue;
+    
 
     public void setText(string[] newText) {
         text = newText;
@@ -23,4 +24,7 @@ public class SriptableDialogueManager : ScriptableObject {
     }
 
 
+    public PlayerMove getPlayer() {
+        return GameObject.FindWithTag("Player").GetComponent<PlayerMove>();
+    }
 }

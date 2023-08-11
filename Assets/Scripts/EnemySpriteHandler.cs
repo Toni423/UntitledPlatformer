@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class EnemySpriteHandler : MonoBehaviour {
@@ -13,6 +12,7 @@ public class EnemySpriteHandler : MonoBehaviour {
 
     [SerializeField] private float meleeViewDistance;
     [SerializeField] private float spellViewDistance;
+    [SerializeField] private SpriteRenderer spriteRenderer;
     
     
     private float timeSinceAttack;
@@ -25,6 +25,19 @@ public class EnemySpriteHandler : MonoBehaviour {
     
     private void Update() {
         timeSinceAttack += Time.deltaTime;
+        Collider2D[] temp = Physics2D.OverlapCircleAll(attackPoint.position, spellViewDistance, targets);
+        if(temp.Length != 0) {
+            if (temp[0].transform.position.x < attackPoint.position.x) {
+                spriteRenderer.flipX = false;
+                currentDirection = -1;
+            }
+            else {
+                spriteRenderer.flipX = true;
+                currentDirection = 1;
+            }
+        }
+        
+        
         if (timeSinceAttack > attackCooldown) {
             if (Physics2D.OverlapCircleAll(attackPoint.position, meleeViewDistance, targets).Length != 0) {
                 attack("Attack");
@@ -48,7 +61,7 @@ public class EnemySpriteHandler : MonoBehaviour {
 
     public void attacked() {
         Collider2D[] hit = Physics2D.OverlapCircleAll(
-            attackPoint.position + (Vector3)(Vector2.right * attackPointOffset) * currentDirection, attackRadius,
+            attackPoint.position + (Vector3)(Vector2.right * attackPointOffset ) * currentDirection, attackRadius,
             targets);
         foreach (Collider2D collider in hit) {
             collider.GetComponent<PlayerMove>().takeDamage(attackDamage, attackPoint.position);

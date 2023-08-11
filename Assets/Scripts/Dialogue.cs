@@ -19,11 +19,15 @@ public class Dialogue : MonoBehaviour {
 
 
     private void OnEnable() {
+        dialogueManager.getPlayer().enabled = false;
         nextLine = 0;
         textField.text = "";
         text = dialogueManager.getText();
     }
-    
+
+    private void OnDisable() {
+        dialogueManager.getPlayer().enabled = true;
+    }
 
 
     private void Update() {
@@ -40,6 +44,9 @@ public class Dialogue : MonoBehaviour {
             else {
                 gameObject.SetActive(false);
             }
+        }
+        else if(Input.GetKeyDown(KeyCode.Escape)) {
+            gameObject.SetActive(false);
         }
     }
 
