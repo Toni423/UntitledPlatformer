@@ -25,6 +25,8 @@ public class EnemySpriteHandler : MonoBehaviour {
     
     private void Update() {
         timeSinceAttack += Time.deltaTime;
+        
+        
         Collider2D[] temp = Physics2D.OverlapCircleAll(attackPoint.position, spellViewDistance, targets);
         if(temp.Length != 0) {
             if (temp[0].transform.position.x < attackPoint.position.x) {
@@ -36,6 +38,7 @@ public class EnemySpriteHandler : MonoBehaviour {
                 currentDirection = 1;
             }
         }
+        
         
         
         if (timeSinceAttack > attackCooldown) {
@@ -96,7 +99,7 @@ public class EnemySpriteHandler : MonoBehaviour {
         if (timeSinceAttack < attackCooldown) {
             return;
         }
-        
+
         timeSinceAttack = 0;
         animator.SetTrigger(type);
     }

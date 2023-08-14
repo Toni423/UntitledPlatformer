@@ -10,11 +10,13 @@ public class Dialogue : MonoBehaviour {
     private Coroutine currentWrite;
     private string[] text;
     private int nextLine = 0;
+    private WaitForSeconds textWriteDelay;
 
 
     private void Awake() {
         dialogueManager.setDialogueWindow(this);
         gameObject.SetActive(false);
+        textWriteDelay = new WaitForSeconds(textSpeed);
     }
 
 
@@ -53,15 +55,14 @@ public class Dialogue : MonoBehaviour {
 
 
     private IEnumerator writeLine(int lineNum) {
-        
-        
         if (lineNum >= text.Length) {
             yield break;
         }
+        
 
         foreach (char c in text[lineNum]) {
             textField.text += c;
-            yield return new WaitForSeconds(textSpeed);
+            yield return textWriteDelay;
         }
         
     }
