@@ -121,6 +121,9 @@ public class PlayerMove : MonoBehaviour {
         } 
         //Jump
         else if (Input.GetKeyDown(KeyCode.W) && curJumpAmount > 0) {
+            grounded = false;
+            groundSensor.Disable(0.1f);
+            animator.SetBool("Grounded", grounded);
             rolling = false;
             curJumpAmount--;
             animator.SetTrigger("Jump");

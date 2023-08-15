@@ -87,10 +87,10 @@ public class EnemySpriteHandler : MonoBehaviour {
     public void takeDamage(int damage) {
         life -= damage;
         animator.SetTrigger("Hurt");
-
+        
         if (life <= 0) {
             animator.SetBool("Dead", true);
-            
+            animator.SetTrigger("Death");
         }
     }
 
