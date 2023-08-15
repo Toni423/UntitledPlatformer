@@ -143,5 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5b33e3575ff67045a1d6f95775a7243, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactableManager: {fileID: 11400000, guid: a5d951024ff3d044b89506efc845c008, type: 2}
   dialogueManager: {fileID: 11400000, guid: d33d7ef083af06644b5ef30d7b4052b0, type: 2}
   text: []

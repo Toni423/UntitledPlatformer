@@ -13,7 +13,7 @@ public class EnemySpriteHandler : MonoBehaviour {
     [SerializeField] private float meleeViewDistance;
     [SerializeField] private float spellViewDistance;
     [SerializeField] private SpriteRenderer spriteRenderer;
-    [SerializeField] private Collider2D collider;
+    [SerializeField] private Collider2D enemyCollider;
     
     private float timeSinceAttack;
     private int currentDirection = -1;
@@ -91,7 +91,7 @@ public class EnemySpriteHandler : MonoBehaviour {
         
         if (life <= 0 && !dead) {
             dead = true;
-            collider.enabled = false;
+            enemyCollider.enabled = false;
             animator.SetBool("Dead", true);
             animator.SetTrigger("Death");
         }
