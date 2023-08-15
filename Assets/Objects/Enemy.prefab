@@ -133,6 +133,7 @@ MonoBehaviour:
   meleeViewDistance: 4
   spellViewDistance: 18
   spriteRenderer: {fileID: 4231344432093816517}
+  collider: {fileID: 8532188581460720465}
 --- !u!61 &8532188581460720465
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -7,7 +7,8 @@ public class PlayerMove : MonoBehaviour {
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private int jumpAmountMax = 2;
     [SerializeField] private float rollTime;
-
+    [SerializeField] private Collider2D normalCollider;
+    [SerializeField] private Collider2D rollCollider;
     
     [Header("Attack")]
     [SerializeField] private float attackRadius = 2f;
@@ -59,6 +60,8 @@ public class PlayerMove : MonoBehaviour {
         
         if (rolling && currentRollTime < 0) {
             rolling = false;
+            normalCollider.enabled = true;
+            rollCollider.enabled = false;
         }
         
         //Check if character just landed on the ground
@@ -109,6 +112,8 @@ public class PlayerMove : MonoBehaviour {
 
         // Roll
         if (Input.GetKeyDown(KeyCode.LeftAlt) && !rolling) {
+            rollCollider.enabled = true;
+            normalCollider.enabled = false;
             animator.SetTrigger("Roll");
             currentRollTime = rollTime;
             rb.velocity = new Vector2(rb.velocity.x * 2, rb.velocity.y);

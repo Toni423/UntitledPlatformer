@@ -13,11 +13,12 @@ public class EnemySpriteHandler : MonoBehaviour {
     [SerializeField] private float meleeViewDistance;
     [SerializeField] private float spellViewDistance;
     [SerializeField] private SpriteRenderer spriteRenderer;
-    
+    [SerializeField] private Collider2D collider;
     
     private float timeSinceAttack;
     private int currentDirection = -1;
     private Animator animator;
+    private bool dead;
 
     private void Start() {
         animator = GetComponent<Animator>();
@@ -88,7 +89,9 @@ public class EnemySpriteHandler : MonoBehaviour {
         life -= damage;
         animator.SetTrigger("Hurt");
         
-        if (life <= 0) {
+        if (life <= 0 && !dead) {
+            dead = true;
+            collider.enabled = false;
             animator.SetBool("Dead", true);
             animator.SetTrigger("Death");
         }
