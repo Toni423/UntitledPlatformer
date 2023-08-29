@@ -16,8 +16,9 @@ public class PlayerMove : MonoBehaviour {
     [SerializeField] private Transform attackPoint;
     [SerializeField] private float attackPointOffset;
     [SerializeField] private int damage = 2;
-    
-    [Header("Miscellaneous")]
+
+    [Header("Miscellaneous")] 
+    [SerializeField] private float hurtTime;
     [SerializeField] private float throwBackForceX;
     [SerializeField] private float throwBackForceY;
     [SerializeField] private GameObject animationHandler;
@@ -34,6 +35,7 @@ public class PlayerMove : MonoBehaviour {
     private bool isPushed;
     private float currentRollTime;
     private bool rolling;
+    private float timeSinceHurt = 1;
     
 
     private Sensor_HeroKnight groundSensor;
@@ -56,6 +58,7 @@ public class PlayerMove : MonoBehaviour {
 
         timeSinceAttacked += Time.deltaTime;
         currentRollTime -= Time.deltaTime;
+        timeSinceHurt += Time.deltaTime;
 
         
         if (rolling && currentRollTime < 0) {
@@ -82,11 +85,11 @@ public class PlayerMove : MonoBehaviour {
             curJumpAmount = jumpAmountMax;
         }
 
-        if ( Mathf.Abs(rb.velocity.x) < Mathf.Epsilon) {
+        if ( timeSinceHurt > hurtTime) {
             isPushed = false;
         }
-        
-        
+
+
         float direct = Input.GetAxis("Horizontal");
         float directY = Mathf.Min(Input.GetAxis("Vertical") * 0.1f, 0f); 
         
@@ -195,6 +198,7 @@ public class PlayerMove : MonoBehaviour {
             
         // apply force
         rb.velocity = new Vector2(xForce, yForce);
+        timeSinceHurt = 0;
         isPushed = true;
         
 
@@ -217,5 +221,9 @@ public class PlayerMove : MonoBehaviour {
             animator.SetTrigger("Death");
             this.enabled = false;
         }
+    }
+
+    private void OnDisable() {
+        rb.velocity = Vector2.zero;
     }
 }
